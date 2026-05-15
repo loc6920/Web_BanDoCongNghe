@@ -137,7 +137,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h2>Quản lý đơn hàng</h2>
                     <a href="staff.php">
-                        <button class="button-search">Tất cả</button>
+                        <button class="back-home-btn">Tất cả</button>
                     </a>
                 </div>
 
@@ -214,8 +214,8 @@
 
                                     <!-- CHỜ XỬ LÝ -->
                                     <?php if($row['status'] == 'pending'){ ?>
-                                    <a href="update_order.php?id=<?= $row['order_id'] ?>&status=shipping">
-                                        <button class="button-search">
+                                    <a href="update_order.php?id=<?= $row['order_id'] ?>&status=shipping" onclick="return confirm('Xác nhận giao đơn hàng này?')">
+                                        <button class="custom_btn">
                                             Giao vận chuyển
                                         </button>
                                     </a>
@@ -223,7 +223,7 @@
 
                                     <!-- ĐANG VẬN CHUYỂN -->
                                     <?php if($row['status'] == 'shipping'){ ?>
-                                    <a href="update_order.php?id=<?= $row['order_id'] ?>&status=completed">
+                                    <a href="update_order.php?id=<?= $row['order_id'] ?>&status=completed" onclick="return confirm('Xác nhận đơn hàng thành công?')">
                                         <button class="create_btn">
                                             Hoàn thành
                                         </button>
@@ -234,6 +234,14 @@
                                     <button class="delete-btn">
                                         Đã hoàn thành
                                     </button>
+                                    <?php } ?>
+                                    <?php if($row['status'] == 'pending'){ ?>
+                                        <a href="cancel_order.php?id=<?= $row['order_id'] ?>&from=staff"
+                                        onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?') " >
+                                            <button class="delete-btn">
+                                                Hủy đơn
+                                            </button>
+                                        </a>
                                     <?php } ?>
                                 </div>
                             </td>

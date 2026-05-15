@@ -8,6 +8,18 @@
     <?php
         include("db.php");
         session_start();
+        // cập nhật role
+        if(isset($_SESSION["users"])){
+            $user_id=$_SESSION["users"]["user_id"];
+            $sql_user="SELECT * 
+            FROM users 
+            WHERE user_id='$user_id'";
+            $result_user=mysqli_query($conn,$sql_user);
+            if(mysqli_num_rows($result_user)>0){
+                $_SESSION["users"]=mysqli_fetch_assoc($result_user);
+            }
+
+        }
         /* SEARCH */
         if(isset($_GET['keyword']) && $_GET['keyword'] != ""){
             $keyword = $_GET['keyword'];
@@ -64,19 +76,19 @@
                 $role=$user_role["role"];
                 
                 if($role==1){ ?>
-                    <a href="admin.php">
-                        <button class="button-search">
-                            Admin
-                        </button>
-                    </a>
+                <a href="admin.php">
+                    <button class="button-search">
+                        Quản trị
+                    </button>
+                </a>
                 <?php } ?>
 
                 <?php if($role==2){ ?>
-                    <a href="staff.php">
-                        <button class="button-search">
-                            Staff
-                        </button>
-                    </a>
+                <a href="staff.php">
+                    <button class="button-search">
+                        Nhân viên
+                    </button>
+                </a>
                 <?php } ?>
                 <!-- =============== -->
                 <a href="profile.php">
@@ -151,9 +163,20 @@
                                 <?= strtolower($row['product_name']) ?>
                             </h3>
                             <p class="product-price"><?= number_format($row['price']) ?> đ</p>
-                            <p class="product-stock"> Còn <?= $row['stock'] ?> sản phẩm</p>
-                            <a href=" add_to_cart.php?id=<?= $row['product_id'] ?>">
-                                <button class="cart-btn"> Thêm vào giỏ hàng</button></a>
+                            <p class="product-stock"> Còn <?php if($row['stock'] < 0){ echo 0;} else echo $row['stock'];  ?> sản phẩm</p>
+                            <?php if($row['stock'] > 0){ ?>
+                            <form action="add_to_cart.php" method="post">
+                                <input type="hidden" name="product_id" value="<?= $row['product_id'] ?>">
+                                <button type="submit" class="cart-btn">
+                                    Thêm vào giỏ hàng
+                                </button>
+                            </form>
+
+                            <?php }else{ ?>
+                            <button class="cart-btn" style="background-color:red;" disabled>
+                                Hết hàng
+                            </button>
+                            <?php } ?>
                         </div>
                         <?php } ?>
                     </div>

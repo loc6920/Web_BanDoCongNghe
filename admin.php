@@ -61,8 +61,8 @@
                 </a>
             </div>
             <?php } else { 
-                // header("Location: home.php");
-                // exit;
+                header("Location: home.php");
+                exit;
              } ?>
         </div>
     </div>
@@ -70,7 +70,7 @@
     <main class="body_staff">
         <div class="dashboard">
             <div class="admin-header">
-                <h1>Bảng điều khiển Admin</h1>
+                <h1>Bảng điều khiển quản trị viên</h1>
                 <a href="home.php" class="back-home-btn">Quay lại trang chủ</a>
             </div>
             <!-- CARDS -->
@@ -197,7 +197,7 @@
                                 <td><?= $row['status'] ?></td>
                                 <!-- ACTION -->
                                 <td>
-                                    <a href="order_detail.php?id=<?= $row['order_id'] ?>">
+                                    <a href="order_detail.php?id=<?= $row['order_id'] ?> &from=admin">
                                         <button class="edit-btn"> Xem chi tiết</button>
                                     </a>
                                 </td>

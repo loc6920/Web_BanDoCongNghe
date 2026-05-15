@@ -6,75 +6,75 @@
     <title>Hồ sơ cá nhân - 84 STORE</title>
     <link rel="stylesheet" href="./style.css">
     <?php
-include("db.php");
-session_start();
+    include("db.php");
+    session_start();
 
-// cập nhật role
-        if(isset($_SESSION["users"])){
-            $user_id=$_SESSION["users"]["user_id"];
-            $sql_user="SELECT * 
-            FROM users 
-            WHERE user_id='$user_id'";
-            $result_user=mysqli_query($conn,$sql_user);
-            if(mysqli_num_rows($result_user)>0){
-                $_SESSION["users"]=mysqli_fetch_assoc($result_user);
+    // cập nhật role
+            if(isset($_SESSION["users"])){
+                $user_id=$_SESSION["users"]["user_id"];
+                $sql_user="SELECT * 
+                FROM users 
+                WHERE user_id='$user_id'";
+                $result_user=mysqli_query($conn,$sql_user);
+                if(mysqli_num_rows($result_user)>0){
+                    $_SESSION["users"]=mysqli_fetch_assoc($result_user);
+                }
+
             }
+    if(!isset($_SESSION["users"])){
+        header("location:dangnhap.php");
+        exit();
+    }
 
+    $user=$_SESSION["users"];
+    $u_id=$user['user_id'];
+
+    /* UPDATE PROFILE */
+    if($_SERVER["REQUEST_METHOD"]=="POST"){
+        $name=$_POST['name'];
+        $phone=$_POST['phone'];
+        $province=$_POST['province'];
+        $district=$_POST['district'];
+        $ward=$_POST['ward'];
+        $detail=$_POST['address'];
+
+        /* UPDATE USER */
+        $sql_user="UPDATE users 
+        SET name='$name' 
+        WHERE user_id='$u_id'";
+
+        mysqli_query($conn,$sql_user);
+
+        /* CHECK ADDRESS */
+        $check_sql="SELECT * 
+        FROM addresses 
+        WHERE user_id='$u_id'";
+        $check_result=mysqli_query($conn,$check_sql);
+
+        /* UPDATE */
+        if(mysqli_num_rows($check_result)>0){
+            $update_sql=" UPDATE addresses SET phone='$phone', province='$province', district='$district', ward='$ward', detail='$detail'
+            WHERE user_id='$u_id'";
+            mysqli_query($conn,$update_sql);
+
+        }else{
+            /* INSERT */
+            $insert_sql="INSERT INTO addresses(user_id, phone, province, district, ward, detail ) VALUES ('$u_id','$phone','$province','$district','$ward','$detail')";
+            mysqli_query($conn,$insert_sql);
         }
-if(!isset($_SESSION["users"])){
-    header("location:dangnhap.php");
-    exit();
-}
+        $_SESSION["users"]["name"]=$name;
+        header("location:profile.php");
+        exit();
+    }
 
-$user=$_SESSION["users"];
-$u_id=$user['user_id'];
-
-/* UPDATE PROFILE */
-if($_SERVER["REQUEST_METHOD"]=="POST"){
-    $name=$_POST['name'];
-    $phone=$_POST['phone'];
-    $province=$_POST['province'];
-    $district=$_POST['district'];
-    $ward=$_POST['ward'];
-    $detail=$_POST['address'];
-
-    /* UPDATE USER */
-    $sql_user="UPDATE users 
-    SET name='$name' 
-    WHERE user_id='$u_id'";
-
-    mysqli_query($conn,$sql_user);
-
-    /* CHECK ADDRESS */
-    $check_sql="SELECT * 
+    /* GET ADDRESS */
+    $sql_address="SELECT * 
     FROM addresses 
     WHERE user_id='$u_id'";
-    $check_result=mysqli_query($conn,$check_sql);
+    $result_address=mysqli_query($conn,$sql_address);
+    $address=mysqli_fetch_assoc($result_address);
 
-    /* UPDATE */
-    if(mysqli_num_rows($check_result)>0){
-        $update_sql=" UPDATE addresses SET phone='$phone', province='$province', district='$district', ward='$ward', detail='$detail'
-        WHERE user_id='$u_id'";
-        mysqli_query($conn,$update_sql);
-
-    }else{
-        /* INSERT */
-        $insert_sql="INSERT INTO addresses(user_id, phone, province, district, ward, detail ) VALUES ('$u_id','$phone','$province','$ward','$detail')";
-        mysqli_query($conn,$insert_sql);
-    }
-    $_SESSION["users"]["name"]=$name;
-    header("location:profile.php");
-    exit();
-}
-
-/* GET ADDRESS */
-$sql_address="SELECT * 
-FROM addresses 
-WHERE user_id='$u_id'";
-$result_address=mysqli_query($conn,$sql_address);
-$address=mysqli_fetch_assoc($result_address);
-
-?>
+    ?>
 </head>
 
 <body class="body_staff">
@@ -87,7 +87,11 @@ $address=mysqli_fetch_assoc($result_address);
         </div>
 
         <div class="nav-right">
-
+            <a href="cart.php">
+                <button class="button-search">
+                    Giỏ hàng
+                </button>
+            </a>
             <a href="home.php">
                 <button class="button-search">Trang chủ</button>
             </a>
@@ -186,21 +190,15 @@ $address=mysqli_fetch_assoc($result_address);
                             <div>
                                 <label>Họ và tên</label>
 
-                                <input
-                                type="text"
-                                name="name"
-                                value="<?= htmlspecialchars($user['name']) ?>"
-                                class="input-search profile-input">
+                                <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>"
+                                    class="input-search profile-input">
                             </div>
 
                             <div>
                                 <label>Số điện thoại</label>
 
-                                <input
-                                type="text"
-                                name="phone"
-                                value="<?= $address['phone'] ?? '' ?>"
-                                class="input-search profile-input">
+                                <input type="text" name="phone" value="<?= $address['phone'] ?? '' ?>"
+                                    class="input-search profile-input">
                             </div>
 
                         </div>
@@ -259,12 +257,8 @@ $address=mysqli_fetch_assoc($result_address);
 
                                 <label>Địa chỉ chi tiết</label>
 
-                                <input
-                                type="text"
-                                name="address"
-                                value="<?= $address['detail'] ?? '' ?>"
-                                class="input-search profile-input"
-                                placeholder="Số nhà, tên đường...">
+                                <input type="text" name="address" value="<?= $address['detail'] ?? '' ?>"
+                                    class="input-search profile-input" placeholder="Số nhà, tên đường...">
 
                             </div>
 
@@ -295,7 +289,28 @@ $address=mysqli_fetch_assoc($result_address);
                 <div class="card" style="margin-top:20px;">
 
                     <h2 style="margin-bottom:20px;">Đơn hàng đã mua</h2>
-
+                    <div>
+                        <a href="profile.php#orderTab">
+                            <button class="back-home-btn">
+                                Tất cả
+                            </button>
+                        </a>
+                        <a href="profile.php?filter=pending#orderTab">
+                            <button class="back-home-btn">
+                                Chờ xử lý
+                            </button>
+                        </a>
+                        <a href="profile.php?filter=shipping#orderTab">
+                            <button class="back-home-btn">
+                                Đang vận chuyển
+                            </button>
+                        </a>
+                        <a href="profile.php?filter=completed#orderTab">
+                            <button class="back-home-btn">
+                                Hoàn thành
+                            </button>
+                        </a>
+                    </div>
                     <table>
 
                         <thead>
@@ -306,6 +321,7 @@ $address=mysqli_fetch_assoc($result_address);
                                 <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
                                 <th>Chi tiết</th>
+                                <th>Thao tác</th>
                             </tr>
 
                         </thead>
@@ -313,16 +329,18 @@ $address=mysqli_fetch_assoc($result_address);
                         <tbody>
 
                             <?php
-
-                            $sql="SELECT * 
-                            FROM orders 
-                            WHERE user_id='$u_id' 
-                            ORDER BY created_at DESC";
-
+                            $filter =$_GET['filter']?? '';
+                            $sql = " SELECT *
+                            FROM orders
+                            WHERE user_id='$u_id'
+                            ";
+                            if($filter != ''){
+                                $sql .= "AND status='$filter'
+                                ";
+                            }
+                            $sql .= "ORDER BY created_at DESC ";
                             $result=mysqli_query($conn,$sql);
-
                             while($row=mysqli_fetch_assoc($result)){
-
                             ?>
 
                             <tr>
@@ -336,24 +354,41 @@ $address=mysqli_fetch_assoc($result_address);
                                 <td>
 
                                     <?php if($row['status']=="pending"){ ?>
-                                        <span style="color:orange;font-weight:600;">Chờ xử lý</span>
+                                    <span style="color:orange;font-weight:600;">Chờ xử lý</span>
                                     <?php } ?>
 
                                     <?php if($row['status']=="shipping"){ ?>
-                                        <span style="color:blue;font-weight:600;">Đang vận chuyển</span>
+                                    <span style="color:blue;font-weight:600;">Đang vận chuyển</span>
                                     <?php } ?>
 
                                     <?php if($row['status']=="completed"){ ?>
-                                        <span style="color:green;font-weight:600;">Hoàn thành</span>
+                                    <span style="color:green;font-weight:600;">Hoàn thành</span>
                                     <?php } ?>
 
                                 </td>
 
                                 <td>
 
-                                    <a href="order_detail.php?id=<?= $row['order_id'] ?>">
+                                    <a href="order_detail.php?id=<?= $row['order_id'] ?>&from=profile">
                                         <button class="edit-btn">Xem chi tiết</button>
                                     </a>
+
+                                </td>
+                                <td>
+
+                                    <?php if($row['status']=="pending"){ ?>
+
+                                    <a href="cancel_order.php?id=<?= $row['order_id'] ?>"
+                                        onclick="return confirm('Hủy đơn hàng này?') ">
+                                        <button class="delete-btn">
+                                            Hủy đơn
+                                        </button>
+                                    </a>
+                                    <?php }else{ ?>
+                                    <button disabled>
+                                        Không thể hủy
+                                    </button>
+                                    <?php } ?>
 
                                 </td>
 
@@ -406,118 +441,129 @@ $address=mysqli_fetch_assoc($result_address);
     </footer>
 
     <script>
-    function toggleEdit(){
+    function toggleEdit() {
 
-        const form=document.getElementById("profileForm");
-        const view=document.getElementById("profileView");
-        const btn=document.getElementById("editBtn");
+        const form = document.getElementById("profileForm");
+        const view = document.getElementById("profileView");
+        const btn = document.getElementById("editBtn");
 
-        if(form.style.display==="none"){
+        if (form.style.display === "none") {
 
-            form.style.display="block";
-            view.style.display="none";
-            btn.innerText="Đang chỉnh sửa";
+            form.style.display = "block";
+            view.style.display = "none";
+            btn.innerText = "Đang chỉnh sửa";
 
-        }else{
+        } else {
 
-            form.style.display="none";
-            view.style.display="block";
-            btn.innerText="Chỉnh sửa";
+            form.style.display = "none";
+            view.style.display = "block";
+            btn.innerText = "Chỉnh sửa";
 
         }
 
     }
 
-    function openTab(tabId,button){
+    function openTab(tabId, button) {
 
-        document.querySelectorAll(".tab-content").forEach(tab=>{
-            tab.style.display="none";
+        document.querySelectorAll(".tab-content").forEach(tab => {
+            tab.style.display = "none";
         });
 
-        document.querySelectorAll(".tab-btn").forEach(btn=>{
-            btn.style.background="#e5e7eb";
-            btn.style.color="#111";
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.style.background = "#e5e7eb";
+            btn.style.color = "#111";
         });
 
-        document.getElementById(tabId).style.display="block";
+        document.getElementById(tabId).style.display = "block";
 
-        button.style.background="#111827";
-        button.style.color="#fff";
+        button.style.background = "#111827";
+        button.style.color = "#fff";
 
     }
 
-    const province=document.getElementById("province");
-    const district=document.getElementById("district");
-    const ward=document.getElementById("ward");
+    const province = document.getElementById("province");
+    const district = document.getElementById("district");
+    const ward = document.getElementById("ward");
 
     /* LOAD TỈNH */
     fetch("https://provinces.open-api.vn/api/p/")
-    .then(res=>res.json())
-    .then(data=>{
+        .then(res => res.json())
+        .then(data => {
 
-        data.forEach(item=>{
+            data.forEach(item => {
 
-            province.innerHTML+=`
+                province.innerHTML += `
             <option value="${item.name}" data-code="${item.code}">
                 ${item.name}
             </option>
             `;
 
+            });
+
         });
 
-    });
-
     /* LOAD HUYỆN */
-    province.addEventListener("change",function(){
+    province.addEventListener("change", function() {
 
-        district.innerHTML=`<option value="">Chọn quận huyện</option>`;
-        ward.innerHTML=`<option value="">Chọn phường xã</option>`;
+        district.innerHTML = `<option value="">Chọn quận huyện</option>`;
+        ward.innerHTML = `<option value="">Chọn phường xã</option>`;
 
-        const provinceCode=this.options[this.selectedIndex].dataset.code;
+        const provinceCode = this.options[this.selectedIndex].dataset.code;
 
         fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-        .then(res=>res.json())
-        .then(data=>{
+            .then(res => res.json())
+            .then(data => {
 
-            data.districts.forEach(item=>{
+                data.districts.forEach(item => {
 
-                district.innerHTML+=`
+                    district.innerHTML += `
                 <option value="${item.name}" data-code="${item.code}">
                     ${item.name}
                 </option>
                 `;
 
-            });
+                });
 
-        });
+            });
 
     });
 
     /* LOAD XÃ */
-    district.addEventListener("change",function(){
+    district.addEventListener("change", function() {
 
-        ward.innerHTML=`<option value="">Chọn phường xã</option>`;
+        ward.innerHTML = `<option value="">Chọn phường xã</option>`;
 
-        const districtCode=this.options[this.selectedIndex].dataset.code;
+        const districtCode = this.options[this.selectedIndex].dataset.code;
 
         fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-        .then(res=>res.json())
-        .then(data=>{
+            .then(res => res.json())
+            .then(data => {
 
-            data.wards.forEach(item=>{
+                data.wards.forEach(item => {
 
-                ward.innerHTML+=`
+                    ward.innerHTML += `
                 <option value="${item.name}">
                     ${item.name}
                 </option>
                 `;
 
+                });
+
             });
 
-        });
-
     });
+    window.onload = function() {
 
+        let hash = window.location.hash;
+
+        if (hash == "#orderTab") {
+
+            let btn = document.querySelectorAll(".tab-btn")[1];
+            openTab(
+                "orderTab", btn
+            );
+        }
+    }
     </script>
 
 </body>

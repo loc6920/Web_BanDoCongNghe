@@ -3,7 +3,7 @@
 include("db.php");
 
 $order_id=$_GET['id'];
-$from=$_GET['from'] ?? 'admin';
+$from=$_GET['from'] ?? '';
 
 $sql_user="SELECT u.name,u.email,a.phone,a.detail,a.ward,a.district,a.province
 FROM orders o
@@ -51,15 +51,20 @@ $total=0;
             <?php if($from=="staff"){ ?>
 
             <a href="staff.php">
-                <button class="button-search">Quay lại Staff</button>
+                <button class="button-search">Quay lại Nhân viên</button>
             </a>
 
-            <?php }else{ ?>
+            <?php }
+            else if($from== "admin"){ ?> 
 
             <a href="admin.php">
-                <button class="button-search">Quay lại Admin</button>
+                <button class="button-search">Quay lại Quản trị</button>
             </a>
-
+            <?php } 
+            else if ($from== "profile") { ?> 
+                <a href="profile.php">
+                <button class="button-search">Quay lại</button>
+                </a>
             <?php } ?>
 
         </div>

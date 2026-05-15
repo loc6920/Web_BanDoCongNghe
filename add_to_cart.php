@@ -1,17 +1,47 @@
 <?php
+
+include("db.php");
+
 session_start();
-$id = $_GET['id'];
+
+$id=$_POST['product_id'];
+
 if(!isset($_SESSION['cart'])){
-    $_SESSION['cart'] = [];
+    $_SESSION['cart']=[];
 }
 
-/* nếu sản phẩm đã có */
+/* GET STOCK */
+$sql="
+SELECT stock 
+FROM products
+WHERE product_id='$id'
+";
+
+$result=mysqli_query($conn,$sql);
+
+$product=mysqli_fetch_assoc($result);
+
+$stock=$product['stock'];
+
+/* IF EXISTS */
 if(isset($_SESSION['cart'][$id])){
-    $_SESSION['cart'][$id]++;
+
+    if($_SESSION['cart'][$id] < $stock){
+
+        $_SESSION['cart'][$id]++;
+
+    }
+
 }else{
-    $_SESSION['cart'][$id] = 1;
+
+    if($stock > 0){
+
+        $_SESSION['cart'][$id]=1;
+
+    }
+
 }
 
-header("Location: home.php");
+header("location:home.php");
 
 ?>

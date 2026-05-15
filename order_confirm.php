@@ -19,20 +19,42 @@ $user_id = $_SESSION['users']['user_id'];
 
 $totalPrice = 0;
 
+/* CHECK STOCK */
+foreach($cart as $product_id => $quantity){
+
+    $sql="
+    SELECT stock 
+    FROM products
+    WHERE product_id='$product_id'
+    ";
+
+    $result=mysqli_query($conn,$sql);
+
+    $product=mysqli_fetch_assoc($result);
+
+    if($product['stock'] < $quantity){
+
+        echo "
+        <script>
+            alert('Sản phẩm đã hết hàng');
+            window.location='cart.php';
+        </script>
+        ";
+
+        exit();
+
+    }
+
+}
 /* tính tổng tiền */
 foreach($cart as $product_id => $quantity){
 
     $sql = "SELECT price FROM products
     WHERE product_id='$product_id'";
-
     $result = mysqli_query($conn,$sql);
-
     $product = mysqli_fetch_assoc($result);
-
     if($product){
-
         $totalPrice += $product['price'] * $quantity;
-
     }
 }
 
@@ -48,7 +70,7 @@ $order_id = mysqli_insert_id($conn);
 /* thêm order item */
 foreach($cart as $product_id => $quantity){
 
-    $sql = "SELECT price FROM products
+    $sql = "SELECT price,stock FROM products
     WHERE product_id='$product_id'";
 
     $result = mysqli_query($conn,$sql);
@@ -56,15 +78,21 @@ foreach($cart as $product_id => $quantity){
     $product = mysqli_fetch_assoc($result);
 
     if($product){
-
         $price = $product['price'];
-
         $sql_item = "INSERT INTO order_items(quantity,price,product_id,order_id)
         VALUES('$quantity','$price','$product_id','$order_id')";
-
         mysqli_query($conn,$sql_item);
-
     }
+    /* UPDATE STOCK */
+        $new_stock=$product['stock'] - $quantity;
+
+        $sql_stock="
+        UPDATE products
+        SET stock='$new_stock'
+        WHERE product_id='$product_id'
+        ";
+
+        mysqli_query($conn,$sql_stock);
 }
 
 /* xóa cart */
