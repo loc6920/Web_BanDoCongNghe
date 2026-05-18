@@ -158,7 +158,9 @@
                         ){
                         ?>
                         <div class="product-card">
-                            <img src="uploads/<?= $row['image'] ?>">
+                            <a href="product_detail.php?id=<?= $row['product_id'] ?>">
+                                <img src="uploads/<?= $row['image'] ?>">
+                            </a>
                             <h3 class="product-name">
                                 <?= strtolower($row['product_name']) ?>
                             </h3>

@@ -757,3 +757,135 @@ img:hover{
 .profile-btn:hover{
     background:#f3f4f6;
 }
+
+/* chi tiết sản phẩm */
+.product-detail-wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    background:#fff;
+    border-radius:24px;
+    padding:40px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+}
+
+.product-gallery{
+    width:100%;
+}
+
+.main-image{
+    background:#f3f4f6;
+    border-radius:24px;
+    overflow:hidden;
+}
+
+.main-image img{
+    width:100%;
+    display:block;
+    transition:0.3s;
+}
+
+.main-image img:hover{
+    transform:scale(1.04);
+}
+
+.product-info-box{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.product-category{
+    color:#6b7280;
+    font-size:15px;
+    margin-bottom:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.product-title{
+    font-size:36px;
+    line-height:1.2;
+    margin-bottom:25px;
+    color:#111827;
+}
+
+.product-price-box{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:30px;
+}
+
+.product-price{
+    font-size:32px;
+    font-weight:700;
+    color:#dc2626;
+}
+
+.stock-badge{
+    background:#dcfce7;
+    color:#166534;
+    padding:8px 16px;
+    border-radius:999px;
+    font-weight:600;
+}
+
+.stock-badge.out{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.product-meta{
+    display:flex;
+    gap:40px;
+    margin-bottom:35px;
+}
+
+.meta-item{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.meta-label{
+    color:#6b7280;
+    font: size 16px;
+}
+
+.product-description{
+    border-top:1px solid #e5e7eb;
+    padding-top:25px;
+    margin-bottom:35px;
+}
+
+.product-description h3{
+    margin-bottom:15px;
+    font-size:24px;
+}
+
+.product-description p{
+    color:#4b5563;
+    line-height:1.8;
+}
+
+.buy-btn{
+    width:100%;
+    border:none;
+    background:#111827;
+    color:#fff;
+    padding:18px;
+    border-radius:16px;
+    font-size:18px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.buy-btn:hover{
+    background:#2563eb;
+}
+
+.out-btn{
+    background:#dc2626;
+}
